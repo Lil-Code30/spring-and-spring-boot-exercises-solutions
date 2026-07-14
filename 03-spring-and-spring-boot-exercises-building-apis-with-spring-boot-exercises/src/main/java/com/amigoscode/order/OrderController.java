@@ -1,5 +1,7 @@
 package com.amigoscode.order;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -68,68 +70,78 @@ public class OrderController {
     // TODO: 1 - Create a GET endpoint mapped to "/api/v1/orders/welcome"
     //  that returns the string "Welcome to the Orders API"
     @GetMapping("/welcome")
-    public String welcomeMessage(){
-        return "Welcome to the Orders API";
+    public ResponseEntity<String> welcomeMessage(){
+        return ResponseEntity.ok().body("Welcome to the Orders API");
     }
 
     // TODO: 2 - Create a GET endpoint mapped to "/api/v1/orders/sample"
     //  that returns a single hardcoded Order object
     //  Hint: new Order(1L, "Laptop", "PENDING", 999.99, "john@mail.com", LocalDate.now(), "rush")
     @GetMapping("/sample")
-    public Order getSample(){
-        return new Order(1L,
+    public ResponseEntity<Order> getSample(){
+        Order sample =  new Order(1L,
                 "Laptop",
                 "PENDING",
                 999.99,
                 "john@mail.com",
                 LocalDate.now(),
                 "rush");
+
+        return ResponseEntity.ok().body(sample);
     }
 
     // TODO: 3 - Create a GET endpoint mapped to "/api/v1/orders"
     //  that returns a hardcoded List of Order objects
     //  Hint: use List.of(...)\
     @GetMapping()
-    public List<Order> getAllOrders(){
-         return orders;
+    public ResponseEntity<List<Order>>getAllOrders(){
+         return ResponseEntity.ok().body(orders);
     }
 
     // TODO: 4 - Create a GET endpoint mapped to "/api/v1/orders/{id}"
     //  that takes a @PathVariable Long id and returns an Order
     //  For now, return a hardcoded Order with the given id
     @GetMapping("/{id}")
-    public Optional<Order> getOrderById(@PathVariable Long id){
-        return orders.stream().filter(o -> o.getId().equals(id)).findFirst();
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id){
+
+        Optional<Order> order =  orders.stream().filter(o -> o.getId().equals(id)).findFirst();
+
+//        order.isPresent() ? ResponseEntity.ok().body(order) : ResponseEntity.notFound().build();
+
+        return order.map(value -> ResponseEntity.ok().body(value)).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     // TODO: 5 - Create a GET endpoint mapped to "/api/v1/orders/filter"
     //  that takes a @RequestParam(required = false) String status
     //  Return a filtered list if status is provided, otherwise return all
     @GetMapping("/filter")
-    public List<Order> getOrdersByStatus(@RequestParam(required = false) String status){
+    public ResponseEntity<List<Order>> getOrdersByStatus(@RequestParam(required = false) String status){
+        List<Order> orderList;
 
         if(status != null){
-            return orders.stream()
+            orderList = orders.stream()
                     .filter(o -> o.getStatus().equalsIgnoreCase(status)).toList();
+        }else{
+            orderList = orders;
         }
 
-        return orders;
+        return ResponseEntity.ok().body(orderList);
     }
 
     // TODO: 6 - Create a POST endpoint mapped to "/api/v1/orders"
     //  that takes an Order @RequestBody and returns the saved order
     @PostMapping()
-    public Order createOrder(@RequestBody Order newOrder){
+    public ResponseEntity<Order> createOrder(@RequestBody Order newOrder){
         orders.add(newOrder);
 
-        return newOrder;
+        return ResponseEntity.status(HttpStatus.CREATED).body(newOrder);
     }
 
     // TODO: 7 - Create a PUT endpoint mapped to "/api/v1/orders/{id}"
     //  that takes a @PathVariable Long id and @RequestBody Order
     //  Set the id on the order and update it
     @PutMapping("/{id}")
-    public void updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder){
+    public ResponseEntity<Void> updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder){
         Optional<Order> foundOrder = orders.stream()
                 .filter(o -> o.getId().equals(id)).findFirst();
 
@@ -143,16 +155,26 @@ public class OrderController {
              o.setInternalNotes(updatedOrder.getInternalNotes());
              o.setTotalAmount(updatedOrder.getTotalAmount());
         }
+
+        return ResponseEntity.noContent().build();
     }
 
     // TODO: 8 - Create a DELETE endpoint mapped to "/api/v1/orders/{id}"
     //  that takes a @PathVariable Long id and deletes the order
     @DeleteMapping("/{id}")
-    public void deleteOrder(@PathVariable Long id){
+    public ResponseEntity<Void> deleteOrder(@PathVariable Long id){
         Optional<Order> foundOrder = orders.stream()
                 .filter(o -> o.getId().equals(id)).findFirst();
 
-        foundOrder.ifPresent(o -> orders.remove(o));
+//        foundOrder.ifPresent(o -> orders.remove(o));
+
+        if(foundOrder.isPresent()){
+            orders.remove(foundOrder.get());
+
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     // TODO: 10 - Refactor all endpoints to return ResponseEntity<> with proper status codes:
