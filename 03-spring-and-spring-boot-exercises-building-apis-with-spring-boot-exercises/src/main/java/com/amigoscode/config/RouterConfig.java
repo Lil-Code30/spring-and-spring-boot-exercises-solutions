@@ -18,6 +18,28 @@ package com.amigoscode.config;
 //                        )))
 //                .build();
 //    }
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.function.RouterFunction;
+import org.springframework.web.servlet.function.RouterFunctions;
+import org.springframework.web.servlet.function.ServerResponse;
+
+import java.util.Map;
+
+@Configuration
 public class RouterConfig {
+
+    @Bean
+    public RouterFunction<ServerResponse> orderRoutes(){
+        return RouterFunctions.route()
+                .GET("/api/v1/orders/summary", req -> ServerResponse.ok().body(
+                        Map.of(
+                                "totalOrders", 5,
+                                "pendingOrders", 10
+                        )
+                ))
+                .build();
+    }
 
 }

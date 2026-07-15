@@ -1,7 +1,13 @@
 package com.amigoscode.order;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDate;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Order {
 
     private Long id;
@@ -9,7 +15,12 @@ public class Order {
     private String status;
     private double totalAmount;
     private String customerEmail;
+
+    @JsonProperty("order_date")
+    @JsonFormat( pattern = "dd-MM-yyy")
     private LocalDate orderDate;
+
+    @JsonIgnore
     private String internalNotes;
 
     public Order() {
