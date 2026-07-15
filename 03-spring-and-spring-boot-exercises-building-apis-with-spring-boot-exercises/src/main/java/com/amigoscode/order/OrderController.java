@@ -16,56 +16,13 @@ import static java.util.Arrays.stream;
 @RequestMapping("/api/v1/orders")
 public class OrderController {
 
-    List<Order> orders = List.of(
-            new Order(
-                    1L,
-                    "Laptop",
-                    "PENDING",
-                    999.99,
-                    "john@mail.com",
-                    LocalDate.now(),
-                    "rush"
-            ),
-            new Order(
-                    2L,
-                    "Smartphone",
-                    "SHIPPED",
-                    699.99,
-                    "alice@mail.com",
-                    LocalDate.now().minusDays(2),
-                    "gift wrap"
-            ),
-            new Order(
-                    3L,
-                    "Headphones",
-                    "DELIVERED",
-                    149.99,
-                    "bob@mail.com",
-                    LocalDate.now().minusDays(5),
-                    "leave at front door"
-            ),
-            new Order(
-                    4L,
-                    "Monitor",
-                    "PROCESSING",
-                    299.99,
-                    "emma@mail.com",
-                    LocalDate.now().minusDays(1),
-                    "fragile"
-            ),
-            new Order(
-                    5L,
-                    "Mechanical Keyboard",
-                    "CANCELLED",
-                    129.99,
-                    "david@mail.com",
-                    LocalDate.now().minusDays(3),
-                    "customer requested cancellation"
-            )
-    );
-
     // TODO: 13 - Inject OrderService via constructor injection
     //  (replace direct data access with service calls)
+    private final OrderService orderService;
+
+    public OrderController(OrderService orderService){
+        this.orderService = orderService;
+    }
 
     // TODO: 1 - Create a GET endpoint mapped to "/api/v1/orders/welcome"
     //  that returns the string "Welcome to the Orders API"
@@ -95,7 +52,8 @@ public class OrderController {
     //  Hint: use List.of(...)\
     @GetMapping()
     public ResponseEntity<List<Order>>getAllOrders(){
-         return ResponseEntity.ok().body(orders);
+        List<Order> orders = orderService.getAllOrders();
+        return ResponseEntity.ok().body(orders);
     }
 
     // TODO: 4 - Create a GET endpoint mapped to "/api/v1/orders/{id}"
@@ -104,7 +62,7 @@ public class OrderController {
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id){
 
-        Optional<Order> order =  orders.stream().filter(o -> o.getId().equals(id)).findFirst();
+        Optional<Order> order =  orderService.getOrderById(id);
 
 //        order.isPresent() ? ResponseEntity.ok().body(order) : ResponseEntity.notFound().build();
 
@@ -116,25 +74,24 @@ public class OrderController {
     //  Return a filtered list if status is provided, otherwise return all
     @GetMapping("/filter")
     public ResponseEntity<List<Order>> getOrdersByStatus(@RequestParam(required = false) String status){
-        List<Order> orderList;
+        List<Order> orders;
 
         if(status != null){
-            orderList = orders.stream()
-                    .filter(o -> o.getStatus().equalsIgnoreCase(status)).toList();
+            orders =  orderService.getOrdersByStatus(status);
         }else{
-            orderList = orders;
+            orders = orderService.getAllOrders();
         }
 
-        return ResponseEntity.ok().body(orderList);
+        return ResponseEntity.ok().body(orders);
     }
 
     // TODO: 6 - Create a POST endpoint mapped to "/api/v1/orders"
     //  that takes an Order @RequestBody and returns the saved order
     @PostMapping()
     public ResponseEntity<Order> createOrder(@RequestBody Order newOrder){
-        orders.add(newOrder);
+       Order createdOrder = orderService.createOrder(newOrder);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(newOrder);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdOrder);
     }
 
     // TODO: 7 - Create a PUT endpoint mapped to "/api/v1/orders/{id}"
@@ -142,19 +99,8 @@ public class OrderController {
     //  Set the id on the order and update it
     @PutMapping("/{id}")
     public ResponseEntity<Void> updateOrder(@PathVariable Long id, @RequestBody Order updatedOrder){
-        Optional<Order> foundOrder = orders.stream()
-                .filter(o -> o.getId().equals(id)).findFirst();
 
-        if(foundOrder.isPresent()){
-            Order o = foundOrder.get();
-
-             o.setDescription(updatedOrder.getDescription());
-             o.setStatus(updatedOrder.getStatus());
-             o.setOrderDate(updatedOrder.getOrderDate());
-             o.setCustomerEmail(updatedOrder.getCustomerEmail());
-             o.setInternalNotes(updatedOrder.getInternalNotes());
-             o.setTotalAmount(updatedOrder.getTotalAmount());
-        }
+        orderService.updateOrder(id, updatedOrder);
 
         return ResponseEntity.noContent().build();
     }
@@ -163,16 +109,8 @@ public class OrderController {
     //  that takes a @PathVariable Long id and deletes the order
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id){
-        Optional<Order> foundOrder = orders.stream()
-                .filter(o -> o.getId().equals(id)).findFirst();
 
-//        foundOrder.ifPresent(o -> orders.remove(o));
-
-        if(foundOrder.isPresent()){
-            orders.remove(foundOrder.get());
-
-            return ResponseEntity.noContent().build();
-        }
+        orderService.deleteOrder(id);
 
         return ResponseEntity.notFound().build();
     }
