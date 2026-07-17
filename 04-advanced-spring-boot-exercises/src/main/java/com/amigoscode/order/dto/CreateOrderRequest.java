@@ -5,15 +5,28 @@ package com.amigoscode.order.dto;
 //  - @NotNull(message = "Total amount is required") on totalAmount
 //  - @Positive(message = "Total amount must be positive") on totalAmount
 
+import com.amigoscode.order.validation.ValidOrderStatus;
+import jakarta.validation.constraints.*;
+
 // TODO: 3 - Add more validation annotations:
 //  - @Email(message = "Customer email must be valid") on customerEmail
 //  - @Size(min = 5, max = 200, message = "Description must be between 5 and 200 characters") on description
 //  - @NotBlank(message = "Customer email is required") on customerEmail
 public class CreateOrderRequest {
 
+    @NotNull(message = "Description is required")
+    @Size(min = 5, max = 200, message = "Description must be between 5 and 200 characters")
     private String description;
+
+    @ValidOrderStatus
     private String status;
+
+    @NotNull(message = "Total amount is required")
+    @Positive(message = "Total amount must be positive")
     private Double totalAmount;
+
+    @Email(message = "Customer email must be valid")
+    @NotBlank(message = "Customer is required")
     private String customerEmail;
 
     public CreateOrderRequest() {

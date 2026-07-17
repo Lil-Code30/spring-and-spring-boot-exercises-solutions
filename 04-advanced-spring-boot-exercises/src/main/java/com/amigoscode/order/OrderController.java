@@ -1,6 +1,7 @@
 package com.amigoscode.order;
 
 import com.amigoscode.order.dto.CreateOrderRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,7 +48,7 @@ public class OrderController {
     //  to trigger bean validation on CreateOrderRequest
     //  Hint: import jakarta.validation.Valid
     @PostMapping
-    public ResponseEntity<Order> createOrder(@RequestBody CreateOrderRequest request) {
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request) {
         Order order = new Order();
         order.setDescription(request.getDescription());
         order.setStatus(request.getStatus());

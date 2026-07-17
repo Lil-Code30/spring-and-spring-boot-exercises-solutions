@@ -1,5 +1,6 @@
 package com.amigoscode.order;
 
+import com.amigoscode.order.exception.OrderNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public class OrderService {
         return orderRepository.findAll();
     }
 
-    public Optional<Order> getOrderById(Long id) {
+    public Optional<Order> getOrderById(Long id) throws OrderNotFoundException {
         return orderRepository.findById(id);
     }
 

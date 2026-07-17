@@ -9,3 +9,5 @@ import java.time.LocalDateTime;
 //      int statusCode,
 //      LocalDateTime timestamp
 //  ) {}
+
+public record ApiError(String path, String message, int statusCode, LocalDateTime timestamp) {}
