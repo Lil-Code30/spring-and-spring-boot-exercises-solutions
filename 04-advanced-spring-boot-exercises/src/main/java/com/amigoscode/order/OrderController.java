@@ -2,6 +2,9 @@ package com.amigoscode.order;
 
 import com.amigoscode.order.dto.CreateOrderRequest;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -13,6 +16,7 @@ import java.util.List;
 public class OrderController {
 
     private final OrderService orderService;
+    private static final Logger log = LoggerFactory.getLogger(OrderController.class);
 
     public OrderController(OrderService orderService) {
         this.orderService = orderService;
@@ -25,6 +29,8 @@ public class OrderController {
 
     @GetMapping
     public ResponseEntity<List<Order>> getAllOrders() {
+
+        log.info("Getting all orders");
         return ResponseEntity.ok(orderService.getAllOrders());
     }
 
@@ -78,6 +84,13 @@ public class OrderController {
     // TODO: 15 - Inject the property app.order.max-items using @Value
     //  Create a GET endpoint "/api/v1/orders/max-items" that returns the value
     //  Hint: @Value("${app.order.max-items}")
+    @Value("${app.order.max-items}")
+    private int maxItems;
+
+    @GetMapping("/max-items")
+    public ResponseEntity<Integer> getMaxItems() {
+        return ResponseEntity.ok(maxItems);
+    }
 
     // TODO: 17 - Replace all System.out.println statements in this class with Logger
     //  private static final Logger log = LoggerFactory.getLogger(OrderController.class);
