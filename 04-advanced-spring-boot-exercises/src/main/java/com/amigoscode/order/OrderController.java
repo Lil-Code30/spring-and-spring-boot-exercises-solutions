@@ -70,11 +70,9 @@ public class OrderController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteOrder(@PathVariable Long id) {
-        boolean deleted = orderService.deleteOrder(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+        orderService.deleteOrder(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     // TODO: 15 - Inject the property app.order.max-items using @Value

@@ -32,11 +32,11 @@ public class OrderService {
     }
 
     public void updateOrder(Order order) {
-        orderRepository.update(order);
+        orderRepository.save(order);
     }
 
-    public boolean deleteOrder(Long id) {
-        return orderRepository.deleteById(id);
+    public void deleteOrder(Long id) {
+         orderRepository.deleteById(id);
     }
 
 }
