@@ -3,6 +3,16 @@
 --  VALUES ('Laptop', 'PENDING', 999.99, 'john@mail.com', '2024-01-15', 'rush delivery');
 --  Add at least 3 more rows with different statuses
 
+CREATE TABLE IF NOT EXISTS orders (
+                        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+                        description VARCHAR(255) NOT NULL,
+                        status VARCHAR(50) NOT NULL,
+                        total_amount DECIMAL(10,2) NOT NULL,
+                        customer_email VARCHAR(255) NOT NULL,
+                        order_date DATE NOT NULL,
+                        internal_notes TEXT
+);
+
 INSERT INTO orders (description, status, total_amount, customer_email, order_date, internal_notes)
 VALUES ('Laptop', 'PENDING', 999.99, 'john@mail.com', '2024-01-15', 'rush delivery');
 
