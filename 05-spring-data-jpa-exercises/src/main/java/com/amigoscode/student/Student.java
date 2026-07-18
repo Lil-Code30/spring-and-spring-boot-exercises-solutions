@@ -1,5 +1,7 @@
 package com.amigoscode.student;
 
+import com.amigoscode.book.Book;
+import com.amigoscode.card.StudentIdCard;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;
@@ -52,6 +54,14 @@ public class Student {
     @Column(nullable = false)
     private int age;
 
+    @OneToOne(mappedBy = "student", orphanRemoval = true)
+    private StudentIdCard studentIdCard;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Book>  books = new ArrayList<>();
+
+    private
+
     // TODO: 14 - Add bidirectional one-to-one with StudentIdCard:
     //  private StudentIdCard studentIdCard;
     //  @OneToOne(mappedBy = "student", orphanRemoval = true)
@@ -82,6 +92,14 @@ public class Student {
     // TODO: 17 - Add helper methods for Book:
     //  public void addBook(Book book) — adds the book and sets book.setStudent(this)
     //  public void removeBook(Book book) — removes the book and sets book.setStudent(null)
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public void removeBook(Book book) {
+        books.remove(book);
+    }
 
     // TODO: 19 - Add helper methods for Course:
     //  public void enrollInCourse(Course course) — adds course to this.courses and adds this to course.getStudents()

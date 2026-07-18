@@ -11,6 +11,10 @@ public class Book {
     private Long id;
     private String title;
 
+    @ManyToOne
+    @JoinColumn(name = "student_id")
+    private Student student;
+
     // TODO: 16 - Add bidirectional many-to-one relationship:
     //  - Add a Student field named "student"
     //  - Annotate with @ManyToOne
@@ -40,5 +44,11 @@ public class Book {
     }
 
     // TODO: 16 - Add getter and setter for student
+    public Student getStudent() {
+        return student;
+    }
+    public void setStudent(Student student) {
+        this.student = student;
+    }
 
 }

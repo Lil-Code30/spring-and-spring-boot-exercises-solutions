@@ -1,6 +1,7 @@
 package com.amigoscode.card;
 
 import com.amigoscode.student.Student;
+import jakarta.persistence.*;
 
 // TODO: 12 - Create a StudentIdCard entity:
 //  - Add @Entity annotation
@@ -12,10 +13,16 @@ import com.amigoscode.student.Student;
 // TODO: 13 - Update the relationship:
 //  - Add cascade = CascadeType.ALL to @OneToOne
 //  - Add fetch = FetchType.LAZY to @OneToOne
+@Entity
 public class StudentIdCard {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String cardNumber;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "student_id", referencedColumnName = "id", foreignKey = @ForeignKey(name = "student_id_card_student_fk"))
     private Student student;
 
     public StudentIdCard() {
